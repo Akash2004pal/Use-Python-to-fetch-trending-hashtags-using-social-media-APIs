@@ -1,0 +1,28 @@
+import requests
+import os
+
+# Set your Twitter/X Bearer Token as environment variable for safety
+BEARER_TOKEN = os.getenv("TWITTER_BEARER_TOKEN")
+
+def get_trending_hashtags(woeid=1):
+    """
+    Fetch trending hashtags from Twitter (X) API.
+    woeid=1 → worldwide trends (use specific WOEID for country/city).
+    """
+    url = f"https://api.twitter.com/1.1/trends/place.json?id={woeid}"
+    headers = {"Authorization": f"Bearer {BEARER_TOKEN}"}
+    
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        raise Exception(f"Error: {response.status_code}, {response.text}")
+
+    trends = response.json()[0]["trends"]
+    hashtags = [t["name"] for t in trends if t["name"].startswith("#")]
+    
+    return hashtags
+
+if __name__ == "__main__":
+    hashtags = get_trending_hashtags()
+    print("🔥 Trending Hashtags Worldwide:")
+    for tag in hashtags:
+        print(tag)
